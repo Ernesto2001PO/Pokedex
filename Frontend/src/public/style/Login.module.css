@@ -1,0 +1,95 @@
+/* src/styles/LoginPokemon.module.css */
+
+.pokemonBackground {
+    background-color: #e2e2e2;
+    /* Light grey, like Kanto sky */
+}
+
+.pokemonCard {
+    max-width: 400px;
+    width: 100%;
+    background-color: #ffffff;
+    /* White, like a Poké Ball's top */
+    border-radius: 15px;
+    border: 2px solid #cc0000;
+    /* Red, like a Poké Ball's top half */
+}
+
+.pokemonTitle {
+    color: #3b4cca;
+    /* Dark blue, like a shiny Gyarados */
+    font-weight: bold;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pokemonInput {
+    border-color: #ffde00;
+    /* Yellow, like Pikachu's cheeks */
+    border-width: 2px;
+}
+
+.pokemonInput:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 222, 0, 0.25);
+    border-color: #ffde00;
+}
+
+.pokemonToggleButton {
+    border-color: #ffde00;
+    /* Yellow */
+    border-left: none;
+    background-color: #ffde00;
+    /* Yellow background for the button */
+    color: #3b4cca;
+    /* Blue icon */
+}
+
+.pokemonToggleButton:hover {
+    background-color: #e6c200;
+    /* Slightly darker yellow on hover */
+    border-color: #e6c200;
+}
+
+.pokemonLoginButton {
+    background-color: #cc0000;
+    /* Red, like a Poké Ball */
+    border-color: #cc0000;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.pokemonLoginButton:hover {
+    background-color: #a00000;
+    /* Darker red on hover */
+    border-color: #a00000;
+}
+
+.pokemonRegisterButton {
+    background-color: #3b4cca;
+    /* Blue, like a Great Ball */
+    border-color: #3b4cca;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.pokemonRegisterButton:hover {
+    background-color: #2a3bb8;
+    /* Darker blue on hover */
+    border-color: #2a3bb8;
+}
+
+.pokemonAlert {
+    background-color: #b8d4ea;
+    /* Light blue, like water types */
+    border-color: #3b4cca;
+    /* Blue border */
+    color: #3b4cca;
+    /* Blue text */
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.pokemonAlertHeading {
+    color: #cc0000;
+    /* Red for the heading */
+}
