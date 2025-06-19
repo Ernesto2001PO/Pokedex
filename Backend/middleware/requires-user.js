@@ -36,3 +36,12 @@ exports.requireUser = async (req, res, next) => {
 
     next();
 };
+
+exports.requireAdmin = async (req, res, next) => {
+    const is_admin = res.locals.usuario.es_admin;
+    if (is_admin === false) {
+        return res.status(403).send({ message: "Acceso denegado" });
+    }  
+    
+    next();
+};

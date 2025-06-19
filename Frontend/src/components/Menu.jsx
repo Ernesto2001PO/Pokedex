@@ -5,12 +5,12 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "./../hook/useAuth";
+import { useAuth } from "./../../hook/useAuth";
 import Button from "react-bootstrap/Button";
 
 function Menu() {
   const { isAuthenticated, logout } = useAuth(false);
-  const userName = localStorage.getItem("user");
+  const nombre = localStorage.getItem("nombre");
 
   return (
     <Navbar
@@ -43,7 +43,7 @@ function Menu() {
                 </NavLink>
 
                 <NavLink to="/" className="nav-link">
-                  {userName}
+                  {nombre}
                 </NavLink>
 
               </>

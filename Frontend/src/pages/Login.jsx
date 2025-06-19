@@ -9,13 +9,42 @@ import { Eye, EyeOff } from "lucide-react";
 // Import your CSS Module
 import styles from "../public/style/Login.module.css";
 
+import userRepository from "../../repositories/UserRepository";
+
+
+
+
+
+
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [username, setUsername] = useState("");
+    const [nombre, setnombre] = useState("");
     const [password, setPassword] = useState("");
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
+    };
+
+
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const response = await userRepository.loginUser({
+            nombre,
+            password,
+        });
+        console.log(response);
+        if (response && response.usuario && response.usuario.token) {
+            localStorage.setItem("token", response.usuario.token);
+            localStorage.setItem("nombre", JSON.stringify(response.usuario.nombre));
+            localStorage.setItem("id_usuario", response.usuario.id);
+            localStorage.setItem("email", response.usuario.email);
+            localStorage.setItem("es_admin", response.usuario.es_admin);
+            window.location.href = "/home";
+        } else {
+            setShowAlert(true);
+        }
+
     };
 
     return (
@@ -27,12 +56,12 @@ function Login() {
                     Pokémon Login
                 </h1>
 
-                <Form>
-                    <Form.Group className="mb-3" controlId="formUsername">
+                <Form onSubmit={handleLogin}>
+                    <Form.Group className="mb-3" controlId="formnombre">
                         <Form.Control
                             type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            value={nombre}
+                            onChange={(e) => setnombre(e.target.value)}
                             placeholder="Trainer Name"
                             className={`py-2 ${styles.pokemonInput}`}
                         />
@@ -71,6 +100,10 @@ function Login() {
                     <Button
                         type="button"
                         className={`w-100 py-2 ${styles.pokemonRegisterButton}`}
+                        onClick={() => {
+                            window.location.href = "/register";
+                        }
+                        }
                     >
                         Register
                     </Button>

@@ -83,6 +83,7 @@ exports.login = async (req, res) => {
                 email: usuario.email,
                 rol: usuario.rol,
                 token: token.token,
+                es_admin: usuario.es_admin,
                 fecha_creacion: usuario.fecha_creacion,
             },
         });
