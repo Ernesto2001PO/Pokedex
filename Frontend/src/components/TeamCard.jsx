@@ -1,41 +1,93 @@
 import React, { useState, useEffect } from "react";
-import Menu from "../components/Menu"; 
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
+import EquipoRepository from "../../repositories/EquipoRepository";
+// No se necesita Menu aquí si se renderiza en el padre como Home
 
-const TeamCard = ({ team, onDelete }) => {
+// TeamCard ahora se encargará de buscar y mostrar TODOS los equipos del usuario
+const TeamCard = () => { // Ya no recibe 'team' ni 'onDelete' como props
+    const navigate = useNavigate();
+    const [teams, setTeams] = useState([]); // Cambiado a 'teams' (plural) para almacenar todos los equipos
+    const [loading, setLoading] = useState(true); // Para indicar si los datos están cargando
+    const [error, setError] = useState(null);   // Para manejar errores en la carga
+
+    useEffect(() => {
+        const usuarioId = localStorage.getItem("id_usuario");
+        if (!usuarioId) {
+            navigate("/login");
+            return; 
+        }
+
+        const buscarEquipos = async () => {
+            try {
+                const response = await EquipoRepository.getAllTeamsByUserId(usuarioId);
+                if (Array.isArray(response)) {
+                    setTeams(response);
+                } else {
+                    console.error("Formato de respuesta inesperado para equipos:", response);
+                    setError("Formato de datos de equipos incorrecto.");
+                    setTeams([]); 
+                }
+            } catch (err) {
+                console.error("Error al obtener los equipos:", err);
+                setError("No se pudieron cargar los equipos. Intenta de nuevo más tarde.");
+                setTeams([]);   
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        buscarEquipos();
+    }, [navigate]); 
+
+    if (loading) {
+        return <p className="text-center">Cargando equipos...</p>;
+    }
+
+    if (error) {
+        return <p className="text-center text-danger">{error}</p>;
+    }
+
+    if (teams.length === 0) {
+        return <p className="text-center text-muted">No tienes equipos creados. ¡Crea uno nuevo!</p>;
+    }
 
     return (
-        <div className="card team-card mb-3" style={{ maxWidth: '300px' }}>
-            <div className="card-body">
-                <h5 className="card-title">{team.name}</h5>
-                <div className="d-flex flex-wrap justify-content-center mb-2">
-                    {team.pokemons && team.pokemons.length > 0 ? (
-                        team.pokemons.map((pokemon, index) => (
-                            <img
-                                key={index}
-                                src={pokemon.img_url || 'https://via.placeholder.com/50'} 
-                                alt={pokemon.name || 'Pokémon'}
-                                className="img-fluid rounded-circle m-1"
-                                style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                title={pokemon.name}
-                            />
-                        ))
-                    ) : (
-                        <p className="text-muted">No Pokémon in this team yet.</p>
-                    )}
+        <div className="d-flex flex-wrap justify-content-center">
+            {teams.map((team) => ( 
+                <div key={team.id} className="card team-card m-3" style={{ maxWidth: '300px' }}>
+                    <div className="card-body">
+                        <h5 className="card-title">{team.nombre_equipo}</h5>
+                        <div className="d-flex flex-wrap justify-content-center mb-2">
+                            {team.pokemones && team.pokemones.length > 0 ? (
+                                team.pokemones.map((pokemonName, index) => (
+                                    <span key={index} className="badge bg-secondary m-1">{pokemonName}</span>
+                                ))
+                            ) : (
+                                <p className="text-muted">No Pokémon en este equipo todavía.</p>
+                            )}
+                        </div>
+                        <div className="d-grid gap-2">
+
+                            <Link to={`/team/${team.id}`} className="btn btn-secondary btn-sm">
+                                Agregar Pokemones
+                            </Link>
+                            <Link to={`/team/edit/${team.id}`} className="btn btn-primary btn-sm">
+                                Editar Equipo
+                            </Link>
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => {
+                                    if (window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${team.nombre_equipo}"?`)) {
+                                        console.log(`Eliminando equipo con ID: ${team.id}`);
+                                    }
+                                }}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div className="d-grid gap-2">
-                    <Link to={`/team/edit/${team.id}`} className="btn btn-primary btn-sm">
-                        Editar Equipo
-                    </Link>
-                    <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => onDelete(team.id, team.name)}
-                    >
-                        Eliminar
-                    </button>
-                </div>
-            </div>
+            ))}
         </div>
     );
 }

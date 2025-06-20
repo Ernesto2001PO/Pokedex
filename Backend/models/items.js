@@ -17,11 +17,6 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
-        imagen_url: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            validate: { isUrl: true },
-        },
     }, {
         tableName: 'items',
         timestamps: false,

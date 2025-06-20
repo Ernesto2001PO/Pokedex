@@ -10,12 +10,12 @@ module.exports = function (sequelize) {
                 primaryKey: true,
                 autoIncrement: true,
             },
-            name: {
+            nombre: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true, 
             },
-            user_id: {
+            usuario_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {

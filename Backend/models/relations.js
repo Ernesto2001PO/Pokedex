@@ -27,3 +27,27 @@ models.PokemonTipos.belongsToMany(models.Pokemon, {
     as: 'pokemones'
 });
 
+
+// ...existing code...
+
+// Relación: Un equipo tiene muchos pokemon_en_equipo
+models.Equipos.hasMany(models.Pokemon_en_equipo, {
+    foreignKey: 'equipo_id',
+    as: 'pokemones_en_equipo'
+});
+models.Pokemon_en_equipo.belongsTo(models.Equipos, {
+    foreignKey: 'equipo_id',
+    as: 'equipo'
+});
+
+// Relación: Un pokemon_en_equipo pertenece a un Pokemon
+models.Pokemon_en_equipo.belongsTo(models.Pokemon, {
+    foreignKey: 'pokemon_id',
+    as: 'pokemon'
+});
+
+// (Opcional) Un Pokemon puede estar en muchos pokemon_en_equipo
+models.Pokemon.hasMany(models.Pokemon_en_equipo, {
+    foreignKey: 'pokemon_id',
+    as: 'pokemones_en_equipo'
+});
