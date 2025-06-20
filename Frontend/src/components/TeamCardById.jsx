@@ -1,41 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import EquipoRepository from "../../repositories/EquipoRepository";
 
-const TeamCard = () => { 
-    const navigate = useNavigate();
+const TeamCardById = () => {
     const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true); 
-    const [error, setError] = useState(null);   
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { id } = useParams();
+
 
     useEffect(() => {
-        const usuarioId = localStorage.getItem("id_usuario");
-        if (!usuarioId) {
-            navigate("/login");
-            return; 
-        }
 
-        const buscarEquipos = async () => {
+        const buscarEquipoById = async () => {
             try {
-                const response = await EquipoRepository.getAllTeamsByUserId(usuarioId);
+                const response = await EquipoRepository.getTeamById(id);
                 if (Array.isArray(response)) {
                     setTeams(response);
+                } else if (response && typeof response === "object") {
+                    setTeams([response]);
                 } else {
                     console.error("Formato de respuesta inesperado para equipos:", response);
                     setError("Formato de datos de equipos incorrecto.");
-                    setTeams([]); 
+                    setTeams([]);
                 }
             } catch (err) {
                 console.error("Error al obtener los equipos:", err);
                 setError("No se pudieron cargar los equipos. Intenta de nuevo más tarde.");
-                setTeams([]);   
+                setTeams([]);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         };
 
-        buscarEquipos();
-    }, [navigate]); 
+        buscarEquipoById();
+    }, [id]);
 
     if (loading) {
         return <p className="text-center">Cargando equipos...</p>;
@@ -50,8 +48,8 @@ const TeamCard = () => {
     }
 
     return (
-        <div className="d-flex flex-wrap justify-content-center">
-            {teams.map((team) => ( 
+        <div className="d-flex flex-wrap justify-content-center ">
+            {teams.map((team) => (
                 <div key={team.id} className="card team-card m-3" style={{ maxWidth: '300px' }}>
                     <div className="card-body">
                         <h5 className="card-title">{team.nombre_equipo}</h5>
@@ -65,13 +63,6 @@ const TeamCard = () => {
                             )}
                         </div>
                         <div className="d-grid gap-2">
-
-                            <Link to={`/team/${team.id}`} className="btn btn-secondary btn-sm">
-                                Agregar Pokemones
-                            </Link>
-                            <Link to={`/team/edit/${team.id}`} className="btn btn-primary btn-sm">
-                                Editar Equipo
-                            </Link>
                             <button
                                 className="btn btn-danger btn-sm"
                                 onClick={() => {
@@ -89,5 +80,4 @@ const TeamCard = () => {
         </div>
     );
 }
-
-export default TeamCard;
+export default TeamCardById;

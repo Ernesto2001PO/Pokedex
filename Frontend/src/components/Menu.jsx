@@ -29,25 +29,30 @@ function Menu() {
                 Home
               </NavLink>
             </>
-            <NavLink to="/admin" className="nav-link">
-              Admin
+            <NavLink to="/" className="nav-link">
+              {nombre ? `Hola, ${nombre}` : "Bienvenido"}
             </NavLink>
+            {location.pathname !== "/admin" && localStorage.getItem("es_admin") === "true" && (
+              <NavLink to="/admin" className="nav-link">
+                Admin
+              </NavLink>
+            )}
 
             <>
-              <>
-                <NavLink to="/login" className="nav-link">
-                  Login
-                </NavLink>
-                <NavLink to="/register" className="nav-link">
-                  Register
-                </NavLink>
+              {!isAuthenticated && location.pathname !== "/" && location.pathname !== "/register" && (
+                <>
+                  <NavLink to="/login" className="nav-link">
+                    Login
+                  </NavLink>
+                  <NavLink to="/register" className="nav-link">
+                    Register
+                  </NavLink>
+                  
 
-                <NavLink to="/" className="nav-link">
-                  {nombre}
-                </NavLink>
-
-              </>
+                </>
+              )}
             </>
+
             <>
               {isAuthenticated && (
                 <>

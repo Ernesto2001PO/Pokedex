@@ -34,6 +34,7 @@ const Registro = () => {
 
     return (
         <>
+            <Menu/>
             <div
                 className={`d-flex min-vh-100 align-items-center justify-content-center ${styles.pokemonBackground}`}
             >

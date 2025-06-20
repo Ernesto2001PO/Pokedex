@@ -25,7 +25,6 @@ const CrearEquipo = () => {
         } else {
             alert("Error al crear el equipo: " + (response?.message || "Error desconocido"));
         }
-
     }
 
     return (

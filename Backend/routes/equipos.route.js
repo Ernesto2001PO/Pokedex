@@ -5,6 +5,7 @@ module.exports = (app) => {
     const router = require("express").Router();
 
     router.get("/obtener/:id", equipoController.getAllTeamsByUserId);
+    router.get("/obtenerId/:id", equipoController.getById);
     router.post("/crear", requireUser, equipoController.createTeam);
     router.post("/:equipo_id/agregarPokemon", requireUser, equipoController.addPokemonToTeam);
 

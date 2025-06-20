@@ -36,6 +36,47 @@ exports.getAllTeamsByUserId = async (req, res) => {
     }
 }
 
+exports.getById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const equipo = await models.Equipos.findByPk(id, {
+            include: [
+                {
+                    model: models.Pokemon_en_equipo,
+                    as: "pokemones_en_equipo",
+                    include: [
+                        {
+                            model: models.Pokemon,
+                            as: "pokemon",
+                            attributes: ["nombre"]
+                        }
+                    ]
+                }
+            ],
+        });
+        if (!equipo) {
+            return res.status(404).json({ message: "Equipo no encontrado" });
+        }
+        const equipoConPokemones = {
+            nombre_equipo: equipo.nombre,
+            id: equipo.id,
+            pokemones: equipo.pokemones_en_equipo.map(pe => pe.pokemon?.nombre)
+        };
+        res.json(equipoConPokemones);
+    } catch (error) {
+        console.error("Error al obtener el equipo:", error);
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
+}
+
+
+
+
+
+
+
+
+
 exports.createTeam = async (req, res) => {
     try {
         const { nombre, usuario_id } = req.body;
@@ -58,8 +99,8 @@ exports.createTeam = async (req, res) => {
         console.error("Error al crear el equipo:", error);
         return res.status(500).json({ message: "Error interno del servidor" });
     }
-    
-}
+
+};
 
 
 

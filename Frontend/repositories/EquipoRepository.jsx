@@ -11,6 +11,15 @@ const Equipo = {
         throw error;
         }
     },
+    getTeamById: async (id) => {
+        try {
+        const response = await axiosInstance.get(`/equipo/obtenerId/${id}`);
+        return response.data;
+        } catch (error) {
+        console.error("Error fetching team by ID:", error);
+        throw error;
+        }
+    },
     
     createTeam: async (teamData) => {
         try {

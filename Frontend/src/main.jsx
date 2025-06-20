@@ -9,6 +9,7 @@ import Login from "./pages/Login"
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import CrearEquipo from "./pages/CrearEquipo";
+import AgregarPokemones from "./pages/AgregarPokemones";
 
 // Pages Operaciones
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/crearEquipo" element={<CrearEquipo />} />
+        <Route path="/team/:id" element={<AgregarPokemones />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
