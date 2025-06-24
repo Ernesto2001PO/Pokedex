@@ -29,7 +29,17 @@ const Equipo = {
         console.error("Error creating team:", error);
         throw error;
         }
+    },
+    addPokemonToTeam: async (teamId, pokemonData) => {
+        try {
+        const response = await axiosInstance.post(`/equipo/${teamId}/agregarPokemon`, pokemonData);
+        return response.data;
+        } catch (error) {
+        console.error("Error adding Pokemon to team:", error);
+        throw error;
+        }
     }
+
 };
 
 export default Equipo;
