@@ -48,7 +48,7 @@ exports.getById = async (req, res) => {
                         {
                             model: models.Pokemon,
                             as: "pokemon",
-                            attributes: ["nombre"]
+                            attributes: ["nombre", "img_url"]
                         }
                     ]
                 }
@@ -60,7 +60,7 @@ exports.getById = async (req, res) => {
         const equipoConPokemones = {
             nombre_equipo: equipo.nombre,
             id: equipo.id,
-            pokemones: equipo.pokemones_en_equipo.map(pe => pe.pokemon?.nombre)
+            pokemones: equipo.pokemones_en_equipo.map(pe => ({ id: pe.id, nombre: pe.apodo, img_url: pe.pokemon?.img_url }))
         };
         res.json(equipoConPokemones);
     } catch (error) {
@@ -69,12 +69,92 @@ exports.getById = async (req, res) => {
     }
 }
 
-
-
-
-
-
-
+exports.pokemonInTeam = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const pokemonEnEquipo = await models.Pokemon_en_equipo.findByPk(id, {
+            include: [
+                {
+                    model: models.Pokemon,
+                    as: "pokemon",
+                    attributes: ["id_pokemon", "nombre", "img_url", "habilidad1", "habilidad2", "habilidad_oculta"]
+                },
+                {
+                    model: models.Items,
+                    as: "item",
+                    attributes: ["id", "nombre"]
+                },
+                {
+                    model: models.Naturalezas,
+                    as: "naturaleza",
+                    attributes: ["id", "nombre"]
+                },
+                {
+                    model: models.Movimientos,
+                    as: "movimiento1",
+                    attributes: ["id", "nombre"]
+                },
+                {
+                    model: models.Movimientos,
+                    as: "movimiento2",
+                    attributes: ["id", "nombre"]
+                },
+                {
+                    model: models.Movimientos,
+                    as: "movimiento3",
+                    attributes: ["id", "nombre"]
+                },
+                {
+                    model: models.Movimientos,
+                    as: "movimiento4",
+                    attributes: ["id", "nombre"]
+                }
+            ],
+        });
+        if (!pokemonEnEquipo) {
+            return res.status(404).json({ message: "Pokémon no encontrado en el equipo" });
+        }
+        const pokemonDetails = {
+            id: pokemonEnEquipo.id,
+            pokemon_id: pokemonEnEquipo.pokemon_id,
+            nombre: pokemonEnEquipo.pokemon?.nombre,
+            apodo: pokemonEnEquipo.apodo,
+            img_url: pokemonEnEquipo.pokemon?.img_url,
+            tipo: pokemonEnEquipo.pokemon?.tipo,
+            items_id: pokemonEnEquipo.items_id,
+            item: pokemonEnEquipo.item ? { id: pokemonEnEquipo.item.id, nombre: pokemonEnEquipo.item.nombre } : null,
+            habilidad: pokemonEnEquipo.habilidad,
+            naturaleza_id: pokemonEnEquipo.naturaleza_id,
+            naturaleza: pokemonEnEquipo.naturaleza ? { id: pokemonEnEquipo.naturaleza.id, nombre: pokemonEnEquipo.naturaleza.nombre } : null,
+            ev_hp: pokemonEnEquipo.ev_hp,
+            ev_atk: pokemonEnEquipo.ev_atk,
+            ev_def: pokemonEnEquipo.ev_def,
+            ev_spatk: pokemonEnEquipo.ev_spatk,
+            ev_spdef: pokemonEnEquipo.ev_spdef,
+            ev_speed: pokemonEnEquipo.ev_speed,
+            iv_hp: pokemonEnEquipo.iv_hp,
+            iv_atk: pokemonEnEquipo.iv_atk,
+            iv_def: pokemonEnEquipo.iv_def,
+            iv_spatk: pokemonEnEquipo.iv_spatk,
+            iv_spdef: pokemonEnEquipo.iv_spdef,
+            iv_speed: pokemonEnEquipo.iv_speed,
+            movimiento1_id: pokemonEnEquipo.movimiento1_id,
+            movimiento2_id: pokemonEnEquipo.movimiento2_id,
+            movimiento3_id: pokemonEnEquipo.movimiento3_id,
+            movimiento4_id: pokemonEnEquipo.movimiento4_id,
+            movimientos: {
+                movimiento1: pokemonEnEquipo.movimiento1 ? { id: pokemonEnEquipo.movimiento1.id, nombre: pokemonEnEquipo.movimiento1.nombre } : null,
+                movimiento2: pokemonEnEquipo.movimiento2 ? { id: pokemonEnEquipo.movimiento2.id, nombre: pokemonEnEquipo.movimiento2.nombre } : null,
+                movimiento3: pokemonEnEquipo.movimiento3 ? { id: pokemonEnEquipo.movimiento3.id, nombre: pokemonEnEquipo.movimiento3.nombre } : null,
+                movimiento4: pokemonEnEquipo.movimiento4 ? { id: pokemonEnEquipo.movimiento4.id, nombre: pokemonEnEquipo.movimiento4.nombre } : null
+            }
+        };
+        res.json(pokemonDetails);
+    } catch (error) {
+        console.error("Error al obtener el Pokémon en el equipo:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
 
 
 exports.createTeam = async (req, res) => {
@@ -111,7 +191,7 @@ exports.addPokemonToTeam = async (req, res) => {
             pokemon_id,
             slot_number,
             apodo,
-            items_id, 
+            items_id,
             habilidad,
             naturaleza_id,
             ev_hp, ev_atk, ev_def, ev_spatk, ev_spdef, ev_speed,
@@ -129,6 +209,15 @@ exports.addPokemonToTeam = async (req, res) => {
         const pokemonSpecies = await models.Pokemon.findByPk(pokemon_id);
         if (!pokemonSpecies) {
             return res.status(404).json({ message: "Especie de Pokémon no encontrada." });
+        }
+
+        const habilidadesValidas = [
+            pokemonSpecies.habilidad1,
+            pokemonSpecies.habilidad2,
+            pokemonSpecies.habilidad_oculta
+        ].filter(Boolean); 
+        if (habilidad && !habilidadesValidas.includes(habilidad)) {
+            return res.status(400).json({ message: "La habilidad seleccionada no es válida para este Pokémon." });
         }
 
         // 3. Validar límite de 6 Pokémon por equipo

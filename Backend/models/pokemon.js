@@ -15,6 +15,18 @@ module.exports = function (sequelize) {
                 allowNull: false,
                 unique: true, 
             },
+            habilidad1: {
+                type: DataTypes.STRING,
+                allowNull: true, 
+            },
+            habilidad2: {
+                type: DataTypes.STRING,
+                allowNull: true, 
+            },
+            habilidad_oculta: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             img_url: {
                 type: DataTypes.STRING,
                 allowNull: true, 

@@ -8,9 +8,7 @@ const TeamCardById = () => {
     const [error, setError] = useState(null);
     const { id } = useParams();
 
-
     useEffect(() => {
-
         const buscarEquipoById = async () => {
             try {
                 const response = await EquipoRepository.getTeamById(id);
@@ -55,8 +53,22 @@ const TeamCardById = () => {
                         <h5 className="card-title">{team.nombre_equipo}</h5>
                         <div className="d-flex flex-wrap justify-content-center mb-2">
                             {team.pokemones && team.pokemones.length > 0 ? (
-                                team.pokemones.map((pokemonName, index) => (
-                                    <span key={index} className="badge bg-secondary m-1">{pokemonName}</span>
+                                team.pokemones.map((pokemon, index) => (
+                                    <Link
+                                        key={pokemon.id || index}
+                                        to={`/team/pokemon/${pokemon.id}`}
+                                        className="badge bg-secondary m-1 text-decoration-none d-flex align-items-center"
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        {pokemon.img_url && (
+                                            <img
+                                                src={pokemon.img_url}
+                                                alt={pokemon.nombre}
+                                                style={{ width: 32, height: 32, objectFit: "contain", marginRight: 8, background: "#fff", borderRadius: "50%" }}
+                                            />
+                                        )}
+                                        {pokemon.nombre}
+                                    </Link>
                                 ))
                             ) : (
                                 <p className="text-muted">No Pokémon en este equipo todavía.</p>

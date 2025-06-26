@@ -12,6 +12,7 @@ const AgregarPokemones = () => {
             <meta name="description" content="Página para agregar Pokémon a tu equipo" />
             <div className="container mt-5">
                 <h1 className="text-center mb-4">Agregar Pokémon a tu Equipo</h1>
+                <h2>Solo podes agregar 6 pokemones</h2>
                 <TeamCardById />
                 <div className="text-center">
                 <PokemonCard />

@@ -11,7 +11,7 @@ const TeamCard = () => {
     useEffect(() => {
         const usuarioId = localStorage.getItem("id_usuario");
         if (!usuarioId) {
-            navigate("/login");
+            navigate("/");
             return; 
         }
 

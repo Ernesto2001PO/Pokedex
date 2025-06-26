@@ -6,8 +6,12 @@ module.exports = (app) => {
 
     router.get("/obtener/:id", equipoController.getAllTeamsByUserId);
     router.get("/obtenerId/:id", equipoController.getById);
+    
+    router.get("/pokemonEnEquipo/:id", equipoController.pokemonInTeam);
+
     router.post("/crear", requireUser, equipoController.createTeam);
     router.post("/:equipo_id/agregarPokemon", requireUser, equipoController.addPokemonToTeam);
+
 
     app.use("/api/equipo", router);
 }

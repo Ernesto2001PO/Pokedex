@@ -51,3 +51,12 @@ models.Pokemon.hasMany(models.Pokemon_en_equipo, {
     foreignKey: 'pokemon_id',
     as: 'pokemones_en_equipo'
 });
+
+
+
+models.Pokemon_en_equipo.belongsTo(models.Items, { as: "item", foreignKey: "items_id" });
+models.Pokemon_en_equipo.belongsTo(models.Naturalezas, { as: "naturaleza", foreignKey: "naturaleza_id" });
+models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento1", foreignKey: "movimiento1_id" });
+models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento2", foreignKey: "movimiento2_id" });
+models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento3", foreignKey: "movimiento3_id" });
+models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento4", foreignKey: "movimiento4_id" });

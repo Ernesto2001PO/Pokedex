@@ -77,6 +77,9 @@ const PokemonCard = () => {
             alert("Pokémon agregado al equipo exitosamente.");
             setSelectedPokemon(null);
         } catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
+            }
             console.error("Error al agregar Pokémon al equipo:", error);
             alert("Error al agregar Pokémon al equipo.");
         }
@@ -364,13 +367,17 @@ const PokemonCard = () => {
                                         </Form.Group>
                                         <Form.Group controlId="formBasicHabilidad">
                                             <Form.Label>Habilidad</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                placeholder="Ingrese la habilidad"
+                                            <Form.Select
                                                 value={habilidad}
                                                 onChange={e => setHabilidad(e.target.value)}
-                                            />
+                                            >
+                                                <option value="">Seleccione una habilidad</option>
+                                                {selectedPokemon.habilidad1 && <option value={selectedPokemon.habilidad1}>{selectedPokemon.habilidad1}</option>}
+                                                {selectedPokemon.habilidad2 && <option value={selectedPokemon.habilidad2}>{selectedPokemon.habilidad2}</option>}
+                                                {selectedPokemon.habilidad_oculta && <option value={selectedPokemon.habilidad_oculta}>{selectedPokemon.habilidad_oculta}</option>}
+                                            </Form.Select>
                                         </Form.Group>
+                                        
                                         <Form.Group controlId="formBasicNaturaleza">
                                             <Form.Label>Naturaleza</Form.Label>
                                             <Form.Select
