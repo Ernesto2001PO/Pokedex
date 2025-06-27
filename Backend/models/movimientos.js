@@ -13,7 +13,7 @@ module.exports = (sequelize) => {
             allowNull: false,
             unique: true,
         },
-        tipo_id: { // FK al tipo del movimiento (ej. Fuego, Agua)
+        tipo_id: { 
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -21,17 +21,17 @@ module.exports = (sequelize) => {
                 key: 'id_tipo',
             },
         },
-        categoria: { // 'Físico', 'Especial', 'Estado'
+        categoria: { 
             type: DataTypes.ENUM('Físico', 'Especial', 'Estado'),
             allowNull: false,
         },
-        poder: { // Valor de poder del ataque
+        poder: {
             type: DataTypes.INTEGER,
-            allowNull: true, // Los movimientos de estado no tienen poder
+            allowNull: true, 
         },
-        precision: { // Precisión del movimiento
+        precision: { 
             type: DataTypes.INTEGER,
-            allowNull: true, // Algunos movimientos siempre aciertan
+            allowNull: true, 
         },
         descripcion: {
             type: DataTypes.TEXT,

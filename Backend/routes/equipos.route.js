@@ -13,5 +13,10 @@ module.exports = (app) => {
     router.post("/:equipo_id/agregarPokemon", requireUser, equipoController.addPokemonToTeam);
 
 
+    router.put("/editPokemon/:id", requireUser, equipoController.editPokemonInTeam);
+    router.delete("/eliminarPokemon/:id", requireUser, equipoController.deletePokemonEnEquipo);
+    router.delete("/eliminar/:id", requireUser, equipoController.deleteTeam);
+
+
     app.use("/api/equipo", router);
 }

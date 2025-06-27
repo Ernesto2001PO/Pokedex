@@ -10,6 +10,7 @@ exports.getAllPokemon = async (req, res) => {
                     through: { attributes: [] }
                 }
             ],
+            
         });
         res.json(pokemon);
         

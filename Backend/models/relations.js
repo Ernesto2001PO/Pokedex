@@ -11,24 +11,21 @@ models.Token.belongsTo(models.Usuario, {
 });
 
 
-// =================== POKEMON ===================
+// =================== POKEMON ==================
+
+
 models.Pokemon.belongsToMany(models.PokemonTipos, {
     through: models.PokemonConTipo,
     foreignKey: 'id_pokemon',
     otherKey: 'id_tipo',
     as: 'tipos'
 });
-
-// Un Tipo puede pertenecer a muchos Pokémon (a través de PokemonConTipo)
 models.PokemonTipos.belongsToMany(models.Pokemon, {
     through: models.PokemonConTipo,
     foreignKey: 'id_tipo',
     otherKey: 'id_pokemon',
     as: 'pokemones'
 });
-
-
-// ...existing code...
 
 // Relación: Un equipo tiene muchos pokemon_en_equipo
 models.Equipos.hasMany(models.Pokemon_en_equipo, {
@@ -60,3 +57,15 @@ models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento1", fore
 models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento2", foreignKey: "movimiento2_id" });
 models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento3", foreignKey: "movimiento3_id" });
 models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento4", foreignKey: "movimiento4_id" });
+
+
+
+
+models.Movimientos.belongsTo(models.PokemonTipos, {
+    foreignKey: 'tipo_id',
+    as: 'tipo'
+});
+models.PokemonTipos.hasMany(models.Movimientos, {
+    foreignKey: 'tipo_id',
+    as: 'movimientos'
+});

@@ -5,6 +5,7 @@ module.exports = app => {
     require("./items.routes")(app);
     require("./naturalezas.route")(app);
     require("./movimientos.routes")(app);
+    require("./tipos.routes")(app);
 
 
 }

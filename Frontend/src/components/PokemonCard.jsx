@@ -102,6 +102,8 @@ const PokemonCard = () => {
                 setLoading(false);
             }
         };
+
+       
         const fetchItems = async () => {
             try {
                 const data = await ItemRepository.getAllItems();
@@ -150,6 +152,8 @@ const PokemonCard = () => {
                 setLoading(false);
             }
         };
+      
+
 
         fetchPokemones();
         fetchItems();
@@ -291,6 +295,14 @@ const PokemonCard = () => {
                                     <p><strong>Defensa:</strong> {selectedPokemon.base_defense}</p>
                                     <p><strong>HP:</strong> {selectedPokemon.base_hp}</p>
                                     <p><strong>Velocidad:</strong> {selectedPokemon.base_speed}</p>
+                                    <p><strong>Movimientos:</strong></p>
+                                    <ul>
+                                        {selectedPokemon.movimientos?.map(m => (
+                                            <li key={m.id}>{m.nombre}</li>
+                                        ))}
+                                    </ul>
+
+
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>

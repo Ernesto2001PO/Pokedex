@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 import EquipoRepository from "../../repositories/EquipoRepository";
 
-const TeamCard = () => { 
+const TeamCard = () => {
     const navigate = useNavigate();
     const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true); 
-    const [error, setError] = useState(null);   
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const usuarioId = localStorage.getItem("id_usuario");
         if (!usuarioId) {
             navigate("/");
-            return; 
+            return;
         }
 
         const buscarEquipos = async () => {
@@ -23,19 +24,19 @@ const TeamCard = () => {
                 } else {
                     console.error("Formato de respuesta inesperado para equipos:", response);
                     setError("Formato de datos de equipos incorrecto.");
-                    setTeams([]); 
+                    setTeams([]);
                 }
             } catch (err) {
                 console.error("Error al obtener los equipos:", err);
                 setError("No se pudieron cargar los equipos. Intenta de nuevo más tarde.");
-                setTeams([]);   
+                setTeams([]);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         };
 
         buscarEquipos();
-    }, [navigate]); 
+    }, [navigate]);
 
     if (loading) {
         return <p className="text-center">Cargando equipos...</p>;
@@ -51,7 +52,7 @@ const TeamCard = () => {
 
     return (
         <div className="d-flex flex-wrap justify-content-center">
-            {teams.map((team) => ( 
+            {teams.map((team) => (
                 <div key={team.id} className="card team-card m-3" style={{ maxWidth: '300px' }}>
                     <div className="card-body">
                         <h5 className="card-title">{team.nombre_equipo}</h5>
@@ -69,19 +70,19 @@ const TeamCard = () => {
                             <Link to={`/team/${team.id}`} className="btn btn-secondary btn-sm">
                                 Agregar Pokemones
                             </Link>
-                            <Link to={`/team/edit/${team.id}`} className="btn btn-primary btn-sm">
-                                Editar Equipo
-                            </Link>
-                            <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => {
-                                    if (window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${team.nombre_equipo}"?`)) {
-                                        console.log(`Eliminando equipo con ID: ${team.id}`);
-                                    }
-                                }}
-                            >
-                                Eliminar
-                            </button>
+                            <Button variant="danger" onClick={() => {
+                                if (window.confirm("¿Estás seguro de que quieres eliminar este Pokémon del equipo?")) {
+                                    EquipoRepository.deleteTeam(team.id)
+                                        .then(() => {
+                                            alert("Equipo eliminado");
+                                        })
+                                        .catch(err => {
+                                            console.error("Error al eliminar el equipo:", err);
+                                            alert("Error al eliminar el equipo");
+                                        });
+                                }
+                            }}>Eliminar
+                        </Button>
                         </div>
                     </div>
                 </div>
