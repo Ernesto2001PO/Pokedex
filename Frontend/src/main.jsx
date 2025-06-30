@@ -16,6 +16,7 @@ import EditPokemonEnEquipo from "./pages/EditPokemonEnEquipo";
 
 import Admin from "./pages/Admin/Admin";
 
+import AdminRoute from "./components/AdminRoute";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -28,7 +29,14 @@ createRoot(document.getElementById("root")).render(
         <Route path="/team/:id" element={<AgregarPokemones />} />
         <Route path="/team/pokemon/:id" element={<EditPokemonEnEquipo />} />
 
-        <Route path="/admin" element={<Admin />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
 
 
       </Routes>

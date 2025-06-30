@@ -41,14 +41,12 @@ function Menu() {
             <>
               {!isAuthenticated && location.pathname !== "/" && location.pathname !== "/register" && (
                 <>
-                  <NavLink to="/login" className="nav-link">
+                  <NavLink to="/" className="nav-link">
                     Login
                   </NavLink>
                   <NavLink to="/register" className="nav-link">
                     Register
                   </NavLink>
-                  
-
                 </>
               )}
             </>
@@ -61,7 +59,7 @@ function Menu() {
                   </Button>
                 </>
               )}
-            </>
+            </>  
           </Nav>
         </Navbar.Collapse>
       </Container>

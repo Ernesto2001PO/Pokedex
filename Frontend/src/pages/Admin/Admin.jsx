@@ -2,6 +2,7 @@ import React from "react";
 
 import PokemonCRUD from "../../components/Admin/PokemonCRUD";
 import ItemCRUD from "../../components/Admin/ItemCRUD";
+import MovimientoCRUD from "../../components/Admin/MovimientoCRUD";
 import { Container, Tab, Tabs } from "react-bootstrap";
 import Menu from "../../components/Menu";
 
@@ -20,7 +21,8 @@ function Admin() {
       <Menu />
       <Container className="mt-4" style={styleContainer}>
         <Tabs defaultActiveKey="equipos" id="admin-tabs" className="mb-3">
-          <Tab eventKey="equipos" title="Equipos">
+          <Tab eventKey="equipos" title="Movimientos">
+            <MovimientoCRUD />
           </Tab>
           <Tab eventKey="pokemones" title="Pokemones">
             <PokemonCRUD />

@@ -1,4 +1,3 @@
-// src/models/Movimiento.js
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
@@ -26,10 +25,6 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         poder: {
-            type: DataTypes.INTEGER,
-            allowNull: true, 
-        },
-        precision: { 
             type: DataTypes.INTEGER,
             allowNull: true, 
         },

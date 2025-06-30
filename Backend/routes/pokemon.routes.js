@@ -16,19 +16,17 @@ module.exports = (app) => {
         }
     });
 
-
     const upload = multer({ storage: storage });
 
+    
     router.get("/obtener", pokemonController.getAllPokemon);
     router.get("/obtener/:id", pokemonController.getPokemonById);
 
 
-    router.post('/crear', requireUser, upload.single('img_url'), pokemonController.createPokemon);
-    router.put("/editar/:id", requireUser, upload.single('img_url'), pokemonController.updatePokemon);
-
-
-
+    router.post('/crear', requireUser, requireAdmin, upload.single('img_url'), pokemonController.createPokemon);
+    router.put("/editar/:id", requireUser, requireAdmin, upload.single('img_url'), pokemonController.updatePokemon);
     router.delete("/eliminar/:id", requireUser, requireAdmin, pokemonController.deletePokemon);
+    
 
     app.use("/api/pokemon", router);
 }

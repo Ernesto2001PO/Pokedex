@@ -40,6 +40,5 @@ exports.requireAdmin = async (req, res, next) => {
     if (is_admin === false) {
         return res.status(403).send({ message: "Acceso denegado" });
     }  
-    
     next();
 };

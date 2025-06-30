@@ -10,13 +10,14 @@ export const useAuth = (shouldRedirect) => {
 
     useEffect(() => {
         if (shouldRedirect && !isAuthenticated) {
-            navigate("/login");
+            navigate("/");
         }
     }, [isAuthenticated]);
 
     const login = (token, nombre) => {
         localStorage.setItem("token", token);
         localStorage.setItem("nombre", JSON.stringify(nombre));
+        localStorage.setItem("es_admin", es_admin); 
         setIsAuthenticated(true);
 
     
@@ -30,6 +31,8 @@ export const useAuth = (shouldRedirect) => {
         setIsAuthenticated(false);
         navigate("/");
     }
+   
+
     return {
         isAuthenticated,
         login,

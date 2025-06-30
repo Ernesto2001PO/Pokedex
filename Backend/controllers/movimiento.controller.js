@@ -62,3 +62,90 @@ exports.aprenderMovimientoPokemon = async (req, res) => {
     }
 };
 
+exports.createMovimiento = async (req, res) => {
+    try {
+        const { nombre, tipo_id, poder, categoria, descripcion } = req.body;
+        if (!nombre || !tipo_id || !poder || !categoria || !descripcion) {
+            return res.status(400).json({ message: "Faltan datos necesarios para crear el movimiento" });
+        }
+        const nuevoMovimiento = await models.Movimientos.create({
+            nombre,
+            tipo_id,
+            poder,
+            categoria,
+            descripcion
+        });
+        res.status(201).json(nuevoMovimiento);
+    } catch (error) {
+        console.error("Error al crear el movimiento:", error);
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+exports.updateMovimiento = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, tipo_id, poder, categoria, descripcion } = req.body;
+
+        const movimiento = await models.Movimientos.findByPk(id);
+        if (!movimiento) {
+            return res.status(404).json({ message: "Movimiento no encontrado" });
+        }
+
+        await movimiento.update({
+            nombre,
+            tipo_id,
+            poder,
+            categoria,
+            descripcion
+        });
+
+        res.json(movimiento);
+    } catch (error) {
+        console.error("Error al actualizar el movimiento:", error);
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+exports.eliminarMovimientoPokemon = async (req, res) => {
+    try {
+        const { id_pokemon, id_movimiento } = req.body;
+
+        const pokemon = await models.Pokemon.findByPk(id_pokemon);
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado" });
+        }
+
+        const movimiento = await models.Movimientos.findByPk(id_movimiento);
+        if (!movimiento) {
+            return res.status(404).json({ message: "Movimiento no encontrado" });
+        }
+
+        await models.PokemonAprenderMovimiento.destroy({
+            where: { id_pokemon, id_movimiento }
+        });
+
+        res.status(200).json({ message: "Movimiento eliminado correctamente" });
+    } catch (error) {
+        console.error("Error al eliminar el movimiento:", error);
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+exports.deleteMovimiento = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const movimiento = await models.Movimientos.findByPk(id);
+        if (!movimiento) {
+            return res.status(404).json({ message: "Movimiento no encontrado" });
+        }
+        await movimiento.destroy();
+        res.status(200).json({ message: "Movimiento eliminado correctamente" });
+    } catch (error) {
+        console.error("Error al eliminar el movimiento:", error);
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+
+
