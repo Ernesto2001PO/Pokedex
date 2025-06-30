@@ -5,6 +5,6 @@ module.exports = (app) => {
     const router = require("express").Router();
 
     router.get("/obtener", movimientoController.getAllMovimientos);
-
+    router.post("/aprender", movimientoController.aprenderMovimientoPokemon);
     app.use("/api/movimientos", router);
 }

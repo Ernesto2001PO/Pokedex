@@ -12,10 +12,9 @@ import CrearEquipo from "./pages/CrearEquipo";
 import AgregarPokemones from "./pages/AgregarPokemones";
 import EditPokemonEnEquipo from "./pages/EditPokemonEnEquipo";
 
-// Pages Operaciones
+// Pages Admins
 
-// admin components
-
+import Admin from "./pages/Admin/Admin";
 
 
 createRoot(document.getElementById("root")).render(
@@ -28,6 +27,10 @@ createRoot(document.getElementById("root")).render(
         <Route path="/crearEquipo" element={<CrearEquipo />} />
         <Route path="/team/:id" element={<AgregarPokemones />} />
         <Route path="/team/pokemon/:id" element={<EditPokemonEnEquipo />} />
+
+        <Route path="/admin" element={<Admin />} />
+
+
       </Routes>
     </BrowserRouter>
   </StrictMode>

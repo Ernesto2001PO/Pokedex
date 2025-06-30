@@ -14,7 +14,6 @@ exports.requireUser = async (req, res, next) => {
     if (!token) {
         return res.status(401).send({ message: "No autorizado" });
     }
-    // Buscar el token en la tabla 'token'
     const tokenRecord = await db.Token.findOne({
         where: {
             token: token,
@@ -23,7 +22,6 @@ exports.requireUser = async (req, res, next) => {
     if (!tokenRecord) {
         return res.status(401).send({ message: "No autorizado" });
     }
-    // Buscar el usuario usando usuario_id
     const usuario = await db.Usuario.findOne({
         where: {
             id: tokenRecord.usuario_id,

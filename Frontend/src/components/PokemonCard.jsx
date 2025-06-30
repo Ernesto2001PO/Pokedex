@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
+
 import { useParams } from "react-router-dom";
 import { Form, Button } from 'react-bootstrap';
 import PokemonRepository from '../../repositories/PokemonRepository';
 import ItemRepository from '../../repositories/ItemRepository';
 import NaturalezaRepository from '../../repositories/NaturalezaRepository';
-import MovimientoRepository from '../../repositories/MovimientoRepository';
 import EquipoRepository from '../../repositories/EquipoRepository';
 import Menu from './Menu';
 
@@ -20,12 +21,10 @@ const PokemonCard = () => {
     const [selectedMovimientos, setSelectedMovimientos] = useState(['']);
 
 
-
     const [items, setItems] = useState([]);
     const [naturaleza, setNaturaleza] = useState([]);
-    const [movimientos, setMovimientos] = useState([]);
 
-    //FORMULARIO
+
     const [apodo, setApodo] = useState('');
     const [slot, setSlot] = useState(1);
     const [itemId, setItemId] = useState('');
@@ -44,9 +43,31 @@ const PokemonCard = () => {
     const [ivSpDef, setIvSpDef] = useState(0);
     const [ivSpeed, setIvSpeed] = useState(0);
 
+
+    const itemOptions = items.map(item => ({
+        value: item.id,
+        label: (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={item.img_url} alt={item.nombre} style={{ width: 24, height: 24, marginRight: 8 }} />
+                {item.nombre}
+            </div>
+        )
+    }));
+
+    // Función auxiliar para validar suma de EVs
+    const totalEVs = evHp + evAtk + evDef + evSpAtk + evSpDef + evSpeed;
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedPokemon) return;
+
+        if (totalEVs > 508) {
+            alert("La suma total de EVs no puede superar 508.");
+            return;
+        }
+
         const data = {
             pokemon_id: selectedPokemon.id_pokemon,
             slot_number: slot,
@@ -86,95 +107,81 @@ const PokemonCard = () => {
     };
 
     useEffect(() => {
-        const fetchPokemones = async () => {
+        const fetchInitialData = async () => {
             try {
-                const data = await PokemonRepository.getAllPokemons();
-                if (!data || !Array.isArray(data)) {
+                setLoading(true);
+                const [pokemonesData, itemsData, naturalezasData] = await Promise.all([
+                    PokemonRepository.getAllPokemons(),
+                    ItemRepository.getAllItems(),
+                    NaturalezaRepository.getAllNaturalezas()
+                ]);
+
+                if (Array.isArray(pokemonesData)) {
+                    setPokemones(pokemonesData);
+                } else {
                     setError("Error: No se pudieron cargar los Pokémon o el formato es incorrecto.");
-                    setPokemones([]);
-                    return;
                 }
-                setPokemones(data);
-            } catch (err) {
-                setError("Error al cargar los Pokémon desde el servidor.");
-                setPokemones([]);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-       
-        const fetchItems = async () => {
-            try {
-                const data = await ItemRepository.getAllItems();
-                if (!data || !Array.isArray(data)) {
+                if (Array.isArray(itemsData)) {
+                    setItems(itemsData);
+                } else {
                     setError("Error: No se pudieron cargar los items o el formato es incorrecto.");
-                    setItems([]);
-                    return;
                 }
-                setItems(data);
-            } catch (err) {
-                setError("Error al cargar los items desde el servidor.");
-                setItems([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        const fetchNaturaleza = async () => {
-            try {
-                const data = await NaturalezaRepository.getAllNaturalezas();
-                if (!data || !Array.isArray(data)) {
+
+                if (Array.isArray(naturalezasData)) {
+                    setNaturaleza(naturalezasData);
+                } else {
                     setError("Error: No se pudieron cargar las naturalezas o el formato es incorrecto.");
-                    setNaturaleza([]);
-                    return;
                 }
-                setNaturaleza(data);
+
             } catch (err) {
-                setError("Error al cargar las naturalezas desde el servidor.");
-                setNaturaleza([]);
+                setError("Error al cargar datos iniciales desde el servidor: " + err.message);
             } finally {
                 setLoading(false);
             }
         };
-        const fetchMovimientos = async () => {
-            try {
-                const data = await MovimientoRepository.getAllMovimientos();
-                if (!data || !Array.isArray(data)) {
-                    setError("Error: No se pudieron cargar los movimientos o el formato es incorrecto.");
-                    setMovimientos([]);
-                    return;
-                }
-                setMovimientos(data);
-            } catch (err) {
-                setError("Error al cargar los movimientos desde el servidor.");
-                setMovimientos([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-      
 
-
-        fetchPokemones();
-        fetchItems();
-        fetchNaturaleza();
-        fetchMovimientos();
+        fetchInitialData();
     }, []);
 
-    const filteredPokemones = pokemones.filter(pokemon =>
-        pokemon.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
-    const handleShowDetails = (pokemon) => {
-        setSelectedPokemon({ ...pokemon, modalType: 'details' });
+    const handleShowDetails = async (pokemon) => {
+        setLoading(true);
+        try {
+            const detailedPokemon = await PokemonRepository.getPokemonDetails(pokemon.id_pokemon);
+            setSelectedPokemon({ ...detailedPokemon, modalType: 'details' });
+            setLoading(false);
+        } catch (err) {
+            setError("Error al cargar los detalles del Pokémon para mostrar: " + err.message);
+            setLoading(false);
+        }
     };
 
-    const handleRegisterPokemon = (pokemon) => {
-        setSelectedPokemon({ ...pokemon, modalType: 'add' });
+    const handleRegisterPokemon = async (pokemon) => {
+        setLoading(true);
+        try {
+            const detailedPokemon = await PokemonRepository.getPokemonDetails(pokemon.id_pokemon);
+            setSelectedPokemon({ ...detailedPokemon, modalType: 'add' });
+            setApodo('');
+            setSlot(1);
+            setItemId('');
+            setHabilidad('');
+            setNaturalezaId('');
+            setEvHp(0); setEvAtk(0); setEvDef(0);
+            setEvSpAtk(0); setEvSpDef(0); setEvSpeed(0);
+            setIvHp(0); setIvAtk(0); setIvDef(0);
+            setIvSpAtk(0); setIvSpDef(0); setIvSpeed(0);
+            setSelectedMovimientos(['']);
+            setLoading(false);
+        } catch (err) {
+            setError("Error al cargar los detalles del Pokémon para registrar: " + err.message);
+            setLoading(false);
+        }
     };
 
     const handleCloseModal = () => {
         setSelectedPokemon(null);
+        setError(null);
     };
 
     const handleMovimientoChange = (index, value) => {
@@ -195,7 +202,9 @@ const PokemonCard = () => {
     };
 
 
-
+    const filteredPokemones = pokemones.filter(pokemon =>
+        pokemon.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     if (loading) {
         return <div className="text-center my-5">Cargando Pokémon...</div>;
@@ -295,14 +304,16 @@ const PokemonCard = () => {
                                     <p><strong>Defensa:</strong> {selectedPokemon.base_defense}</p>
                                     <p><strong>HP:</strong> {selectedPokemon.base_hp}</p>
                                     <p><strong>Velocidad:</strong> {selectedPokemon.base_speed}</p>
-                                    <p><strong>Movimientos:</strong></p>
+                                    <p><strong>Movimientos que puede aprender:</strong></p>
                                     <ul>
-                                        {selectedPokemon.movimientos?.map(m => (
-                                            <li key={m.id}>{m.nombre}</li>
-                                        ))}
+                                        {selectedPokemon.movimientosAprendibles && selectedPokemon.movimientosAprendibles.length > 0 ? (
+                                            selectedPokemon.movimientosAprendibles.map(m => (
+                                                <li key={m.id}>{m.nombre} (Poder: {m.poder || 'N/A'}, Categoría: {m.categoria || 'N/A'})</li>
+                                            ))
+                                        ) : (
+                                            <li>No se encontraron movimientos aprendibles.</li>
+                                        )}
                                     </ul>
-
-
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
@@ -344,7 +355,7 @@ const PokemonCard = () => {
                                         style={{ width: '120px', height: '120px', objectFit: 'contain' }}
                                     />
                                     <Form onSubmit={handleSubmit}>
-                                        <Form.Group controlId="formBasicApodo">
+                                        <Form.Group className="mb-3" controlId="formBasicApodo">
                                             <Form.Label>Apodo</Form.Label>
                                             <Form.Control
                                                 type="text"
@@ -353,7 +364,7 @@ const PokemonCard = () => {
                                                 onChange={e => setApodo(e.target.value)}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicSlot">
+                                        <Form.Group className="mb-3" controlId="formBasicSlot">
                                             <Form.Label>Slot</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -364,20 +375,16 @@ const PokemonCard = () => {
                                                 onChange={e => setSlot(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicItem">
+                                        <Form.Group className="mb-3" controlId="formBasicItem">
                                             <Form.Label>Items</Form.Label>
-                                            <Form.Select
-                                                aria-label="Seleccione un item"
-                                                value={itemId}
-                                                onChange={e => setItemId(e.target.value)}
-                                            >
-                                                <option value="">Seleccione un item</option>
-                                                {items.map(item => (
-                                                    <option key={item.id} value={item.id}>{item.nombre}</option>
-                                                ))}
-                                            </Form.Select>
+                                            <Select
+                                                options={itemOptions}
+                                                value={itemOptions.find(opt => opt.value === Number(itemId)) || null}
+                                                onChange={option => setItemId(option ? option.value : '')}
+                                                placeholder="Seleccione un item"
+                                            />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicHabilidad">
+                                        <Form.Group className="mb-3" controlId="formBasicHabilidad">
                                             <Form.Label>Habilidad</Form.Label>
                                             <Form.Select
                                                 value={habilidad}
@@ -389,8 +396,7 @@ const PokemonCard = () => {
                                                 {selectedPokemon.habilidad_oculta && <option value={selectedPokemon.habilidad_oculta}>{selectedPokemon.habilidad_oculta}</option>}
                                             </Form.Select>
                                         </Form.Group>
-                                        
-                                        <Form.Group controlId="formBasicNaturaleza">
+                                        <Form.Group className="mb-3" controlId="formBasicNaturaleza">
                                             <Form.Label>Naturaleza</Form.Label>
                                             <Form.Select
                                                 aria-label="Seleccione una Naturaleza"
@@ -403,7 +409,10 @@ const PokemonCard = () => {
                                                 ))}
                                             </Form.Select>
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicEVPHp">
+                                        {/* Sección de EVs */}
+                                        <h6 className="mt-4 mb-2">Puntos de Esfuerzo (EVs) - Total disponible: 508</h6>
+                                        <p className="text-muted small">Total asignado: {evHp + evAtk + evDef + evSpAtk + evSpDef + evSpeed} / 508</p>
+                                        <Form.Group className="mb-2" controlId="formBasicEVPHp">
                                             <Form.Label>EVP HP</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -414,7 +423,7 @@ const PokemonCard = () => {
                                                 onChange={e => setEvHp(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicEVPAtk">
+                                        <Form.Group className="mb-2" controlId="formBasicEVPAtk">
                                             <Form.Label>EVP Ataque</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -425,7 +434,7 @@ const PokemonCard = () => {
                                                 onChange={e => setEvAtk(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicEVPDef">
+                                        <Form.Group className="mb-2" controlId="formBasicEVPDef">
                                             <Form.Label>EVP Defensa</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -436,7 +445,7 @@ const PokemonCard = () => {
                                                 onChange={e => setEvDef(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicEVPSpAtk">
+                                        <Form.Group className="mb-2" controlId="formBasicEVPSpAtk">
                                             <Form.Label>EVP Sp. Ataque</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -447,7 +456,7 @@ const PokemonCard = () => {
                                                 onChange={e => setEvSpAtk(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicEVPSpDef">
+                                        <Form.Group className="mb-2" controlId="formBasicEVPSpDef">
                                             <Form.Label>EVP Sp. Defensa</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -458,7 +467,7 @@ const PokemonCard = () => {
                                                 onChange={e => setEvSpDef(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicEVPSpeed">
+                                        <Form.Group className="mb-2" controlId="formBasicEVPSpeed">
                                             <Form.Label>EVP Velocidad</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -469,7 +478,10 @@ const PokemonCard = () => {
                                                 onChange={e => setEvSpeed(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicIVPHp">
+
+                                        {/* Sección de IVs */}
+                                        <h6 className="mt-4 mb-2">Valores Individuales (IVs) - Rango: 0-31</h6>
+                                        <Form.Group className="mb-2" controlId="formBasicIVPHp">
                                             <Form.Label>IVP HP</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -480,7 +492,7 @@ const PokemonCard = () => {
                                                 onChange={e => setIvHp(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicIVPAtk">
+                                        <Form.Group className="mb-2" controlId="formBasicIVPAtk">
                                             <Form.Label>IVP Ataque</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -491,7 +503,7 @@ const PokemonCard = () => {
                                                 onChange={e => setIvAtk(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicIVPDef">
+                                        <Form.Group className="mb-2" controlId="formBasicIVPDef">
                                             <Form.Label>IVP Defensa</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -502,7 +514,7 @@ const PokemonCard = () => {
                                                 onChange={e => setIvDef(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicIVPSpAtk">
+                                        <Form.Group className="mb-2" controlId="formBasicIVPSpAtk">
                                             <Form.Label>IVP Sp. Ataque</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -513,7 +525,7 @@ const PokemonCard = () => {
                                                 onChange={e => setIvSpAtk(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicIVPSpDef">
+                                        <Form.Group className="mb-2" controlId="formBasicIVPSpDef">
                                             <Form.Label>IVP Sp. Defensa</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -524,7 +536,7 @@ const PokemonCard = () => {
                                                 onChange={e => setIvSpDef(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicIVPSpeed">
+                                        <Form.Group className="mb-2" controlId="formBasicIVPSpeed">
                                             <Form.Label>IVP Velocidad</Form.Label>
                                             <Form.Control
                                                 type="number"
@@ -535,19 +547,25 @@ const PokemonCard = () => {
                                                 onChange={e => setIvSpeed(Number(e.target.value))}
                                             />
                                         </Form.Group>
-                                        <Form.Group controlId="formBasicMovimiento">
+                                        <Form.Group className="mb-3" controlId="formBasicMovimiento">
                                             <Form.Label>Movimientos</Form.Label>
-                                            {selectedMovimientos.map((mov, idx) => (
+                                            {selectedMovimientos.map((movId, idx) => (
                                                 <div key={idx} className="d-flex align-items-center mb-2">
                                                     <Form.Select
                                                         aria-label={`Seleccione un Movimiento ${idx + 1}`}
-                                                        value={mov}
+                                                        value={movId}
                                                         onChange={e => handleMovimientoChange(idx, e.target.value)}
                                                     >
                                                         <option value="">Seleccione un Movimiento</option>
-                                                        {movimientos.map(item => (
-                                                            <option key={item.id} value={item.id}>{item.nombre}</option>
-                                                        ))}
+                                                        {selectedPokemon.movimientosAprendibles && selectedPokemon.movimientosAprendibles.length > 0 ? (
+                                                            selectedPokemon.movimientosAprendibles.map(movimientoAprendible => (
+                                                                <option key={movimientoAprendible.id} value={movimientoAprendible.id}>
+                                                                    {movimientoAprendible.nombre} (Poder: {movimientoAprendible.poder || 'N/A'})
+                                                                </option>
+                                                            ))
+                                                        ) : (
+                                                            <option disabled>Cargando movimientos o no hay disponibles</option>
+                                                        )}
                                                     </Form.Select>
                                                     {selectedMovimientos.length > 1 && (
                                                         <Button

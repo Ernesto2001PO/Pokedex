@@ -4,10 +4,10 @@ module.exports = (app) => {
     const equipoController = require("../controllers/equipo.controller.js");
     const router = require("express").Router();
 
-    router.get("/obtener/:id", equipoController.getAllTeamsByUserId);
-    router.get("/obtenerId/:id", equipoController.getById);
-    
-    router.get("/pokemonEnEquipo/:id", equipoController.pokemonInTeam);
+    router.get("/obtener/:id", requireUser,equipoController.getAllTeamsByUserId);
+    router.get("/obtenerId/:id", requireUser,equipoController.getById);
+
+    router.get("/pokemonEnEquipo/:id", requireUser, equipoController.pokemonInTeam);
 
     router.post("/crear", requireUser, equipoController.createTeam);
     router.post("/:equipo_id/agregarPokemon", requireUser, equipoController.addPokemonToTeam);

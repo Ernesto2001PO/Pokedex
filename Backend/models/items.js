@@ -13,10 +13,15 @@ module.exports = (sequelize) => {
             allowNull: false,
             unique: true,
         },
+        img_url: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         descripcion: {
             type: DataTypes.TEXT,
             allowNull: true,
         },
+
     }, {
         tableName: 'items',
         timestamps: false,

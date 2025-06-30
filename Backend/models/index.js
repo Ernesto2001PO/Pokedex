@@ -12,8 +12,13 @@ const Pokemon_en_equipo = require("./pokemon_en_equipo")(sequelize);
 
 // ------------------------------------//
 const Movimientos = require("./movimientos")(sequelize);
+const PokemonAprenderMovimiento = require("./pokemonAprenderMovimiento")(sequelize);
+
+
 const Naturalezas = require("./naturalezas")(sequelize);
 const Items = require("./items")(sequelize);
+
+
 
 
 
@@ -29,6 +34,7 @@ module.exports = {
     Movimientos,
     Naturalezas,
     Items,
+    PokemonAprenderMovimiento,
     sequelize,
     Sequelize: sequelize.Sequelize
 };

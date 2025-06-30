@@ -50,6 +50,13 @@ models.Pokemon.hasMany(models.Pokemon_en_equipo, {
 });
 
 
+models.Pokemon.belongsToMany(models.Movimientos, {
+    through: models.PokemonAprenderMovimiento,
+    foreignKey: 'id_pokemon',
+    otherKey: 'id_movimiento',
+    as: 'movimientosAprendibles' 
+});
+
 
 models.Pokemon_en_equipo.belongsTo(models.Items, { as: "item", foreignKey: "items_id" });
 models.Pokemon_en_equipo.belongsTo(models.Naturalezas, { as: "naturaleza", foreignKey: "naturaleza_id" });
@@ -57,6 +64,12 @@ models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento1", fore
 models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento2", foreignKey: "movimiento2_id" });
 models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento3", foreignKey: "movimiento3_id" });
 models.Pokemon_en_equipo.belongsTo(models.Movimientos, { as: "movimiento4", foreignKey: "movimiento4_id" });
+
+
+
+
+
+
 
 
 
