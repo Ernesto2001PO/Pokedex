@@ -27,22 +27,34 @@ const User = {
   ,
   getAllUsers: async () => {
     try {
-      const response = await axiosInstance.get("/usuario/obtener_usuarios");
+      const response = await axiosInstance.get("/usuario/obtener");
       return response.data;
     } catch (error) {
       console.error("Error fetching users:", error);
       throw error;
     }
   },
-  makeAdmin: async (userId) => {
+  makeAdmin: async (id_usuario) => {
     try {
-      const response = await axiosInstance.put(`/usuario/hacer_admin/${userId}`);
+      const response = await axiosInstance.put(`/usuario/hacer_admin/${id_usuario}`);
       return response.data;
     } catch (error) {
       console.error("Error making user admin:", error);
       throw error;
     }
-  }
+  },
+  changePassword: async (id_usuario, newPassword) => {
+    try {
+      const response = await axiosInstance.put(
+        `/usuarios/cambiarPassword/${id_usuario}`,
+        { newPassword } 
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error changing password:", error);
+      throw error;
+    }
+  },
 
 }
 

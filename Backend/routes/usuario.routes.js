@@ -10,5 +10,7 @@ module.exports = (app) => {
     router.post("/login", usuarioController.login);
     router.put("/hacer_admin/:id_usuario", requireUser, usuarioController.hacerAdmin);
 
+    router.put("/cambiarPassword/:id_usuario", requireUser, usuarioController.changePassword);
+
     app.use("/api/usuario", router);
 }

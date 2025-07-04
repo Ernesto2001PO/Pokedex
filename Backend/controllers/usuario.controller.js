@@ -43,6 +43,11 @@ exports.crearUsuario = async (req, res) => {
 exports.obtenerUsuarios = async (req, res) => {
     try {
         const usuarios = await models.Usuario.findAll();
+        if (!usuarios || usuarios.length === 0) {
+            return res.status(404).json({ message: "No se encontraron usuarios" });
+        }
+        
+        
         res.json(usuarios);
     } catch (error) {
         console.error("Error al obtener los usuarios:", error);
@@ -122,6 +127,40 @@ exports.hacerAdmin = async (req, res) => {
         });
     } catch (error) {
         console.error("Error al hacer administrador al usuario:", error);
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
+}
+
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { id_usuario } = req.params;
+        const { newPassword } = req.body;
+
+        if (!newPassword) {
+            return res.status(400).json({ message: "Nueva contraseña es requerida" });
+        }
+
+        const usuario = await models.Usuario.findByPk(id_usuario);
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        usuario.password_hash = TOKEN.generarPassword(newPassword);
+        await usuario.save();
+
+        res.json({
+            message: "Contraseña actualizada exitosamente",
+            usuario: {
+                id: usuario.id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                es_admin: usuario.es_admin,
+                fecha_creacion: usuario.fecha_creacion,
+            },
+        });
+    } catch (error) {
+        console.error("Error al cambiar la contraseña:", error);
         return res.status(500).json({ message: "Error interno del servidor" });
     }
 }

@@ -5,6 +5,7 @@ import ItemCRUD from "../../components/Admin/ItemCRUD";
 import MovimientoCRUD from "../../components/Admin/MovimientoCRUD";
 import { Container, Tab, Tabs } from "react-bootstrap";
 import Menu from "../../components/Menu";
+import UsuarioAdmin from "../../components/Admin/UsuarioAdmin";
 
 function Admin() {
 
@@ -30,6 +31,9 @@ function Admin() {
           <Tab eventKey="items" title="Items">
             <ItemCRUD />
           </Tab>
+          <Tab eventKey="usuarios" title="Usuarios">
+            <UsuarioAdmin />
+            </Tab>
         </Tabs>
       </Container>
     </>

@@ -9,8 +9,13 @@ module.exports = {
     generarPassword: (password) => {
         const password_hash = sha1(password);
         return password_hash;
+    },
+    quitarHashPassword : (usuario) => {
+        const { password_hash, ...usuarioSinPassword } = usuario;
+        return usuarioSinPassword;
     }
 }
+
 
 
 

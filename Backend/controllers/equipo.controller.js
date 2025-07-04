@@ -100,27 +100,27 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento1",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"]
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder","descripcion"]
                 },
                 {
                     model: models.Movimientos,
                     as: "movimiento2",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"]
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"]
                 },
                 {
                     model: models.Movimientos,
                     as: "movimiento3",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"]
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"]
                 },
                 {
                     model: models.Movimientos,
                     as: "movimiento4",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"]
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"]
                 },
                 {
                     model: models.Movimientos,
                     as: "movimiento1",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder","descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -132,7 +132,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento2",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -144,7 +144,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento3",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder","descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -156,7 +156,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento4",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "precision", "descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder",  "descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -267,7 +267,6 @@ exports.addPokemonToTeam = async (req, res) => {
             return res.status(404).json({ message: "Equipo no encontrado." });
         }
 
-        // 2. Validar que el Pokémon (especie) exista
         const pokemonSpecies = await models.Pokemon.findByPk(pokemon_id);
         if (!pokemonSpecies) {
             return res.status(404).json({ message: "Especie de Pokémon no encontrada." });
@@ -347,13 +346,11 @@ exports.editPokemonInTeam = async (req, res) => {
             tipos // 
         } = req.body;
 
-        // 1. Buscar el registro
         const pokemonEnEquipo = await models.Pokemon_en_equipo.findByPk(id);
         if (!pokemonEnEquipo) {
             return res.status(404).json({ message: "Pokémon en equipo no encontrado." });
         }
 
-        // 2. Validar habilidad si es necesario (igual que antes)
         if (habilidad) {
             const pokemonSpecies = await models.Pokemon.findByPk(pokemonEnEquipo.pokemon_id);
             const habilidadesValidas = [
@@ -377,7 +374,6 @@ exports.editPokemonInTeam = async (req, res) => {
             movimiento1_id, movimiento2_id, movimiento3_id, movimiento4_id
         });
 
-        // 4. Actualizar tipos en la tabla intermedia
         if (Array.isArray(tipos)) {
             await models.PokemonConTipo.destroy({
                 where: { id_pokemon: pokemonEnEquipo.pokemon_id }

@@ -237,10 +237,14 @@ const PokemonCard = () => {
                             <div className="col" key={pokemon.id_pokemon}>
                                 <div className="card h-100 shadow-sm text-center">
                                     <img
-                                        src={pokemon.img_url}
+                                        src={
+                                            pokemon.img_url && pokemon.img_url.startsWith("uploads/")
+                                                ? `http://localhost:3000/${pokemon.img_url}`
+                                                : pokemon.img_url
+                                        }
                                         alt={pokemon.nombre}
+                                        style={{ width: "100px" }}
                                         className="card-img-top mx-auto mt-2"
-                                        style={{ width: '80%', height: 'auto', maxHeight: '120px', objectFit: 'contain' }}
                                     />
                                     <div className="card-body">
                                         <h5 className="card-title text-truncate">{pokemon.nombre}</h5>
