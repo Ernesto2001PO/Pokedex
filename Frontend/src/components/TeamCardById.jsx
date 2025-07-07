@@ -4,8 +4,6 @@ import EquipoRepository from "../../repositories/EquipoRepository";
 
 const TeamCardById = () => {
     const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const { id } = useParams();
 
     useEffect(() => {
@@ -25,21 +23,14 @@ const TeamCardById = () => {
                 console.error("Error al obtener los equipos:", err);
                 setError("No se pudieron cargar los equipos. Intenta de nuevo más tarde.");
                 setTeams([]);
-            } finally {
-                setLoading(false);
-            }
+            } 
         };
 
         buscarEquipoById();
     }, [id]);
 
-    if (loading) {
-        return <p className="text-center">Cargando equipos...</p>;
-    }
 
-    if (error) {
-        return <p className="text-center text-danger">{error}</p>;
-    }
+
 
     if (teams.length === 0) {
         return <p className="text-center text-muted">No tienes equipos creados. ¡Crea uno nuevo!</p>;

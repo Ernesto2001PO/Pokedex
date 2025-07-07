@@ -13,7 +13,6 @@ import AgregarPokemones from "./pages/AgregarPokemones";
 import EditPokemonEnEquipo from "./pages/EditPokemonEnEquipo";
 
 // Pages Admins
-
 import Admin from "./pages/Admin/Admin";
 
 import AdminRoute from "./components/AdminRoute";
@@ -37,8 +36,6 @@ createRoot(document.getElementById("root")).render(
             </AdminRoute>
           }
         />
-
-
       </Routes>
     </BrowserRouter>
   </StrictMode>

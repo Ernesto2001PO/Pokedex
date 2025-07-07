@@ -3,10 +3,10 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import userRepository from "../../repositories/UserRepository";
 import Menu from "../components/Menu";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 // Import your new CSS Module
-import styles from "../public/style/RegistroPokemon.module.css"; 
+import styles from "../public/style/RegistroPokemon.module.css";
 
 const Registro = () => {
     const [nombre, setNombre] = useState("");
@@ -16,15 +16,32 @@ const Registro = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        // Validación básica antes de enviar
+        if (!nombre.trim() || !email.trim() || !password.trim()) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+        if (password.length < 6) {
+            alert("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+        // Validación de email simple
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Por favor, ingresa un correo electrónico válido.");
+            return;
+        }
+
         try {
             const response = await userRepository.registerUser({
                 nombre,
                 email,
-                password_hash: password, // Make sure your backend expects 'password_hash'
+                password_hash: password,
             });
             if (response) {
                 alert("¡Registro exitoso! ¡Bienvenido, entrenador!");
-                navigate('/'); 
+                navigate('/');
             }
         } catch (error) {
             console.error("Error al registrar el usuario:", error);
@@ -34,7 +51,7 @@ const Registro = () => {
 
     return (
         <>
-            <Menu/>
+            <Menu />
             <div
                 className={`d-flex min-vh-100 align-items-center justify-content-center ${styles.pokemonBackground}`}
             >

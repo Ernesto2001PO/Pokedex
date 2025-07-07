@@ -12,6 +12,10 @@ const CrearEquipo = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (!teamName.trim()) {
+            alert("Porfavor ingresa un nombre de equipo")
+        }
+        
         const response = await EquipoRepository.createTeam({
             nombre: teamName,
             usuario_id: localStorage.getItem("id_usuario")

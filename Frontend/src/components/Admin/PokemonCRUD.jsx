@@ -180,6 +180,9 @@ const PokemonCRUD = () => {
                                             <td>{pokemon.habilidad1}</td>
                                             <td>{pokemon.habilidad2}</td>
                                             <td>{pokemon.habilidad_oculta}</td>
+                                            
+
+
                                             <td>
                                                 <Button variant="warning" className="me-2" onClick={() => handleEdit(pokemon)}>Edit</Button>
                                                 <Button variant="danger" onClick={() => handleDelete(pokemon.id_pokemon)}>Delete</Button>

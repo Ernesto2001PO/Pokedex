@@ -1,5 +1,7 @@
 const models = require("../models");
 const TOKEN = require("../utils/token");
+
+
 exports.crearUsuario = async (req, res) => {
     try {
         const { nombre, email, password_hash, es_admin } = req.body;
@@ -13,12 +15,11 @@ exports.crearUsuario = async (req, res) => {
 
         console.log("usuario verficado");
 
-        // Crear el nuevo usuario
         const nuevoUsuario = await models.Usuario.create({
             nombre,
             email,
             password_hash: hashedpassword,
-            es_admin: false, 
+            es_admin: false,
         });
 
         res.send({
@@ -46,8 +47,8 @@ exports.obtenerUsuarios = async (req, res) => {
         if (!usuarios || usuarios.length === 0) {
             return res.status(404).json({ message: "No se encontraron usuarios" });
         }
-        
-        
+
+
         res.json(usuarios);
     } catch (error) {
         console.error("Error al obtener los usuarios:", error);
@@ -80,6 +81,7 @@ exports.login = async (req, res) => {
         if (!token) {
             return res.status(500).json({ message: "Error al generar el token" });
         }
+
         res.send({
             message: "Inicio de sesión exitoso",
             usuario: {
@@ -92,6 +94,7 @@ exports.login = async (req, res) => {
                 fecha_creacion: usuario.fecha_creacion,
             },
         });
+
 
     } catch (error) {
         console.error("Error al iniciar sesión:", error);
@@ -131,24 +134,26 @@ exports.hacerAdmin = async (req, res) => {
     }
 }
 
-
 exports.changePassword = async (req, res) => {
     try {
         const { id_usuario } = req.params;
         const { newPassword } = req.body;
-
         if (!newPassword) {
             return res.status(400).json({ message: "Nueva contraseña es requerida" });
         }
-
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
+        }
         const usuario = await models.Usuario.findByPk(id_usuario);
         if (!usuario) {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
-
-        usuario.password_hash = TOKEN.generarPassword(newPassword);
+        const hashedNewPassword = TOKEN.generarPassword(newPassword);
+        if (usuario.password_hash === hashedNewPassword) {
+            return res.status(400).json({ message: "La nueva contraseña no puede ser igual a la anterior" });
+        }
+        usuario.password_hash = hashedNewPassword;
         await usuario.save();
-
         res.json({
             message: "Contraseña actualizada exitosamente",
             usuario: {

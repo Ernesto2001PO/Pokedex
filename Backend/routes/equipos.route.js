@@ -4,7 +4,8 @@ module.exports = (app) => {
     const equipoController = require("../controllers/equipo.controller.js");
     const router = require("express").Router();
 
-    router.get("/obtener/:id", requireUser,equipoController.getAllTeamsByUserId);
+    router.get("/obtener/:id", requireUser, equipoController.getAllTeamsByUserId);
+    
     router.get("/obtenerId/:id", requireUser,equipoController.getById);
 
     router.get("/pokemonEnEquipo/:id", requireUser, equipoController.pokemonInTeam);
@@ -14,6 +15,9 @@ module.exports = (app) => {
 
 
     router.put("/editPokemon/:id", requireUser, equipoController.editPokemonInTeam);
+    router.put("/editTeam/:id", requireUser, equipoController.editTeam);
+    
+
     router.delete("/eliminarPokemon/:id", requireUser, equipoController.deletePokemonEnEquipo);
     router.delete("/eliminar/:id", requireUser, equipoController.deleteTeam);
 

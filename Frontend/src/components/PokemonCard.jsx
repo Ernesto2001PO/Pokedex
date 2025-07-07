@@ -14,8 +14,7 @@ const PokemonCard = () => {
 
     const [pokemones, setPokemones] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+ 
 
     const [selectedPokemon, setSelectedPokemon] = useState(null);
     const [selectedMovimientos, setSelectedMovimientos] = useState(['']);
@@ -54,14 +53,25 @@ const PokemonCard = () => {
         )
     }));
 
-    // Función auxiliar para validar suma de EVs
     const totalEVs = evHp + evAtk + evDef + evSpAtk + evSpDef + evSpeed;
 
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedPokemon) return;
+        if (!selectedPokemon) {
+            alert("Por favor, selecciona un Pokémon.");
+            return;
+        };
+
+        if (!apodo) {
+            alert("Por favor, ingresa un apodo para el Pokémon.");
+            return;
+        }
+        if (slot < 1 || slot > 6) {
+            alert("El número de slot debe estar entre 1 y 6.");
+            return;
+        }
 
         if (totalEVs > 508) {
             alert("La suma total de EVs no puede superar 508.");
@@ -94,22 +104,23 @@ const PokemonCard = () => {
         };
 
         try {
+
+
             await EquipoRepository.addPokemonToTeam(selectedTeamId, data);
             alert("Pokémon agregado al equipo exitosamente.");
             setSelectedPokemon(null);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
-                alert(error.response.data.message);
+                alert("Error al agregar Pokémon al equipo: " + error.response.data.message);
+            } else {
+                alert("Error al agregar Pokémon al equipo.");
             }
-            console.error("Error al agregar Pokémon al equipo:", error);
-            alert("Error al agregar Pokémon al equipo.");
         }
     };
 
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                setLoading(true);
                 const [pokemonesData, itemsData, naturalezasData] = await Promise.all([
                     PokemonRepository.getAllPokemons(),
                     ItemRepository.getAllItems(),
@@ -119,26 +130,24 @@ const PokemonCard = () => {
                 if (Array.isArray(pokemonesData)) {
                     setPokemones(pokemonesData);
                 } else {
-                    setError("Error: No se pudieron cargar los Pokémon o el formato es incorrecto.");
+                    alert("Error: No se pudieron cargar los Pokémon o el formato es incorrecto.");
                 }
 
                 if (Array.isArray(itemsData)) {
                     setItems(itemsData);
                 } else {
-                    setError("Error: No se pudieron cargar los items o el formato es incorrecto.");
+                    alert("Error: No se pudieron cargar los items o el formato es incorrecto.");
                 }
 
                 if (Array.isArray(naturalezasData)) {
                     setNaturaleza(naturalezasData);
                 } else {
-                    setError("Error: No se pudieron cargar las naturalezas o el formato es incorrecto.");
+                    alert("Error: No se pudieron cargar las naturalezas o el formato es incorrecto.");
                 }
 
             } catch (err) {
-                setError("Error al cargar datos iniciales desde el servidor: " + err.message);
-            } finally {
-                setLoading(false);
-            }
+                alert("Error al cargar datos iniciales desde el servidor: " + err.message);
+            } 
         };
 
         fetchInitialData();
@@ -146,19 +155,15 @@ const PokemonCard = () => {
 
 
     const handleShowDetails = async (pokemon) => {
-        setLoading(true);
         try {
             const detailedPokemon = await PokemonRepository.getPokemonDetails(pokemon.id_pokemon);
             setSelectedPokemon({ ...detailedPokemon, modalType: 'details' });
-            setLoading(false);
         } catch (err) {
-            setError("Error al cargar los detalles del Pokémon para mostrar: " + err.message);
-            setLoading(false);
+            alert("Error al cargar los detalles del Pokémon para mostrar: " + err.message);
         }
     };
 
     const handleRegisterPokemon = async (pokemon) => {
-        setLoading(true);
         try {
             const detailedPokemon = await PokemonRepository.getPokemonDetails(pokemon.id_pokemon);
             setSelectedPokemon({ ...detailedPokemon, modalType: 'add' });
@@ -172,16 +177,13 @@ const PokemonCard = () => {
             setIvHp(0); setIvAtk(0); setIvDef(0);
             setIvSpAtk(0); setIvSpDef(0); setIvSpeed(0);
             setSelectedMovimientos(['']);
-            setLoading(false);
         } catch (err) {
-            setError("Error al cargar los detalles del Pokémon para registrar: " + err.message);
-            setLoading(false);
+            alert("Error al cargar los detalles del Pokémon para registrar: " + err.message);
         }
     };
 
     const handleCloseModal = () => {
         setSelectedPokemon(null);
-        setError(null);
     };
 
     const handleMovimientoChange = (index, value) => {
@@ -205,14 +207,6 @@ const PokemonCard = () => {
     const filteredPokemones = pokemones.filter(pokemon =>
         pokemon.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    if (loading) {
-        return <div className="text-center my-5">Cargando Pokémon...</div>;
-    }
-
-    if (error) {
-        return <div className="text-center my-5 text-danger">{error}</div>;
-    }
 
     return (
         <>

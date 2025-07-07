@@ -1,4 +1,4 @@
-const { requireUser } = require("../middleware/requires-user.js");
+const { requireUser, requireAdmin } = require("../middleware/requires-user.js");
 
 module.exports = (app) => {
     const movimientoController = require("../controllers/movimiento.controller.js");
@@ -8,9 +8,9 @@ module.exports = (app) => {
     router.post("/aprender", movimientoController.aprenderMovimientoPokemon);
 
 
-    router.post("/crear", requireUser, movimientoController.createMovimiento);
-    router.put("/editar/:id", requireUser, movimientoController.updateMovimiento);
-    router.delete("/eliminar/:id", requireUser, movimientoController.deleteMovimiento);
+    router.post("/crear", requireUser, requireAdmin,movimientoController.createMovimiento);
+    router.put("/editar/:id", requireUser, requireAdmin,movimientoController.updateMovimiento);
+    router.delete("/eliminar/:id", requireUser, requireAdmin,movimientoController.deleteMovimiento);
 
 
 

@@ -14,7 +14,7 @@ exports.getAllTeamsByUserId = async (req, res) => {
                         {
                             model: models.Pokemon,
                             as: "pokemon",
-                            attributes: ["nombre"]
+                            attributes: ["nombre", "img_url"]
                         }
                     ]
                 }
@@ -23,16 +23,46 @@ exports.getAllTeamsByUserId = async (req, res) => {
         if (!equipos || equipos.length === 0) {
             return res.status(404).json({ message: "No se encontraron equipos para este usuario" });
         }
-        // Solo nombre del equipo y nombres de los pokémon
         const equiposConPokemones = equipos.map(equipo => ({
             nombre_equipo: equipo.nombre,
             id: equipo.id,
-            pokemones: equipo.pokemones_en_equipo.map(pe => pe.pokemon?.nombre)
+            pokemones: equipo.pokemones_en_equipo.map(pe => ({
+                nombre: pe.pokemon?.nombre,
+                img_url: pe.pokemon?.img_url
+            }))
         }));
         res.json(equiposConPokemones);
     } catch (error) {
         console.error("Error al obtener los equipos:", error);
+        
         return res.status(500).json({ message: "Error interno del servidor" });
+    }
+}
+
+exports.editTeam = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre } = req.body;
+
+
+        if (!nombre || nombre.trim() === "") {
+            return res.status(400).json({ message: "El nombre del equipo no puede estar vacío" });
+        }
+
+        const team = await models.Equipos.findByPk(id);
+        if (!team) {
+            return res.status(404).json({ message: "Equipo no encontrado." });
+        }
+
+        await team.update({
+            nombre
+        });
+
+        res.json({ message: "Equipo editado exitosamente", equipo: team });
+
+    } catch (error) {
+        console.error("Error al actualizar el equipo:", error);
+        return res.status(500).json({ message: "Error interno del servidor al editar equipo." });
     }
 }
 
@@ -100,7 +130,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento1",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder","descripcion"]
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"]
                 },
                 {
                     model: models.Movimientos,
@@ -120,7 +150,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento1",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder","descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -144,7 +174,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento3",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder","descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -156,7 +186,7 @@ exports.pokemonInTeam = async (req, res) => {
                 {
                     model: models.Movimientos,
                     as: "movimiento4",
-                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder",  "descripcion"],
+                    attributes: ["id", "nombre", "tipo_id", "categoria", "poder", "descripcion"],
                     include: [
                         {
                             model: models.PokemonTipos,
@@ -208,7 +238,7 @@ exports.pokemonInTeam = async (req, res) => {
                         nombre: pokemonEnEquipo.movimiento1.nombre,
                         poder: pokemonEnEquipo.movimiento1.poder,
                         tipo: pokemonEnEquipo.movimiento1.tipo_id,
-                        tipo_nombre: pokemonEnEquipo.movimiento1.tipo?.nombre 
+                        tipo_nombre: pokemonEnEquipo.movimiento1.tipo?.nombre
                     }
                     : null,
             }
@@ -225,12 +255,13 @@ exports.createTeam = async (req, res) => {
     try {
         const { nombre, usuario_id } = req.body;
 
-        // Verificar si el equipo ya existe
         const existingTeam = await models.Equipos.findOne({ where: { nombre, usuario_id } });
         if (existingTeam) {
             return res.status(400).json({ message: "El equipo ya existe" });
         }
-        // Crear el nuevo equipo
+        if (!nombre || nombre.trim() === "") {
+            return res.status(400).json({ message: "El nombre del equipo no puede estar vacío" });
+        }
         const nuevoEquipo = await models.Equipos.create({
             nombre,
             usuario_id,
@@ -245,6 +276,7 @@ exports.createTeam = async (req, res) => {
     }
 
 };
+
 
 exports.addPokemonToTeam = async (req, res) => {
     try {
@@ -343,7 +375,7 @@ exports.editPokemonInTeam = async (req, res) => {
             ev_hp, ev_atk, ev_def, ev_spatk, ev_spdef, ev_speed,
             iv_hp, iv_atk, iv_def, iv_spatk, iv_spdef, iv_speed,
             movimiento1_id, movimiento2_id, movimiento3_id, movimiento4_id,
-            tipos // 
+            tipos
         } = req.body;
 
         const pokemonEnEquipo = await models.Pokemon_en_equipo.findByPk(id);

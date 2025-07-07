@@ -29,22 +29,34 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const response = await userRepository.loginUser({
-            nombre,
-            password,
-        });
-        console.log(response);
-        if (response && response.usuario && response.usuario.token) {
-            localStorage.setItem("token", response.usuario.token);
-            localStorage.setItem("nombre", JSON.stringify(response.usuario.nombre));
-            localStorage.setItem("id_usuario", response.usuario.id);
-            localStorage.setItem("email", response.usuario.email);
-            localStorage.setItem("es_admin", response.usuario.es_admin);
-            window.location.href = "/home";
-        } else {
-            setShowAlert(true);
+
+        if (!nombre.trim()) {
+            alert("Por favor, ingresa tu nombre");
+            return;
         }
 
+        if (!password.trim()) {
+            alert("Por favor, ingresa tu contraseña");
+            return;
+        }
+        try {
+            const response = await userRepository.loginUser({
+                nombre,
+                password,
+            });
+            console.log(response);
+            if (response && response.usuario && response.usuario.token) {
+                localStorage.setItem("token", response.usuario.token);
+                localStorage.setItem("nombre", JSON.stringify(response.usuario.nombre));
+                localStorage.setItem("id_usuario", response.usuario.id);
+                localStorage.setItem("email", response.usuario.email);
+                localStorage.setItem("es_admin", response.usuario.es_admin);
+                window.location.href = "/home";
+            } 
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            alert("Error en el inicio de sesión. Por favor, inténtalo de nuevo.");
+        }
     };
 
     return (
